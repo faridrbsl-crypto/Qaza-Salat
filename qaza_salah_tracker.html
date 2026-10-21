@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b5d46">
+<title>কাযা সালাত – Qaza Salah Tracker</title>
+<style>
+:root{--green:#0b5d46;--green2:#13805f;--bg:#f4f8f6;--card:#fff;--ink:#17352c;--muted:#62766f;--line:#dce8e2;--gold:#d6ad55}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{background:linear-gradient(135deg,var(--green),#168365);color:#fff;padding:24px 18px 28px;border-radius:0 0 24px 24px}
+.wrap{max-width:760px;margin:auto;padding:0 14px}header .eyebrow{opacity:.85;font-size:13px}h1{margin:6px 0;font-size:25px}header p{margin:4px 0 0;opacity:.92;font-size:14px}
+main{padding:16px 0 34px}.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:-2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 3px 12px #17352c08}
+.metric{font-size:12px;color:var(--muted)}.big{font-size:27px;font-weight:750;margin-top:3px}.small{font-size:12px;color:var(--muted)}
+h2{font-size:18px;margin:22px 2px 10px}.prayer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;margin-bottom:9px}
+.prayer h3{margin:0;font-size:17px}.prayer p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.controls{display:flex;align-items:center;gap:8px}.count{min-width:34px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+button{border:0;cursor:pointer;font:inherit}.round{width:38px;height:38px;border-radius:12px;background:#e5f3ed;color:var(--green);font-size:22px;font-weight:700}
+.primary{background:var(--green);color:white;border-radius:12px;padding:12px 15px;font-weight:650}.secondary{background:#e5f3ed;color:var(--green);border-radius:12px;padding:10px 12px;font-weight:650}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}input[type=number],input[type=date]{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;font:inherit;background:#fff;color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.progressbar{height:10px;background:#e6eee9;border-radius:20px;overflow:hidden;margin:12px 0 6px}.progressbar span{display:block;height:100%;width:0;background:var(--green2);border-radius:20px;transition:width .2s}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.note{font-size:12px;line-height:1.65;color:var(--muted)}.notice{border-left:3px solid var(--gold);padding:10px 12px;background:#fff9e9;border-radius:8px;font-size:12px;line-height:1.65;margin-top:15px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+@media(min-width:600px){.summary{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="eyebrow">ব্যক্তিগত ইবাদতের সহায়ক</div>
+<h1>কাযা সালাত ট্র্যাকার</h1>
+<p>নিয়মিত হিসাব রাখুন, ধীরে ধীরে বাকি সালাত আদায় করুন।</p>
+</div></header>
+<main class="wrap">
+<section class="summary">
+<div class="card"><div class="metric">মোট বাকি</div><div class="big" id="total">০</div><div class="small">ওয়াক্ত</div></div>
+<div class="card"><div class="metric">আদায় করেছেন</div><div class="big" id="done">০</div><div class="small">ওয়াক্ত</div></div>
+<div class="card"><div class="metric">আজ আদায়</div><div class="big" id="today">০</div><div class="small">ওয়াক্ত</div></div>
+<div class="card"><div class="metric">সম্পন্ন</div><div class="big" id="percent">০%</div><div class="small">শুরুতে দেওয়া মোট হিসাবের ভিত্তিতে</div></div>
+</section>
+
+<h2>সালাতভিত্তিক হিসাব</h2>
+<div id="prayers"></div>
+
+<h2>প্রাথমিক হিসাব সেট করুন</h2>
+<div class="card">
+<p class="note">আপনার অনুমান অনুযায়ী প্রতিটি সালাতের কত ওয়াক্ত বাকি আছে তা লিখে “হিসাব সংরক্ষণ” চাপুন। এতে বর্তমান বাকি সংখ্যাগুলো নতুন করে সেট হবে।</p>
+<div class="row2">
+<div><label for="fajrStart">ফজর — বাকি ওয়াক্ত</label><input id="fajrStart" type="number" min="0" step="1" value="0"></div>
+<div><label for="zuhrStart">যোহর — বাকি ওয়াক্ত</label><input id="zuhrStart" type="number" min="0" step="1" value="0"></div>
+<div><label for="asrStart">আসর — বাকি ওয়াক্ত</label><input id="asrStart" type="number" min="0" step="1" value="0"></div>
+<div><label for="maghribStart">মাগরিব — বাকি ওয়াক্ত</label><input id="maghribStart" type="number" min="0" step="1" value="0"></div>
+<div><label for="ishaStart">এশা — বাকি ওয়াক্ত</label><input id="ishaStart" type="number" min="0" step="1" value="0"></div>
+<div><label for="goal">দৈনিক লক্ষ্য (ওয়াক্ত)</label><input id="goal" type="number" min="1" step="1" value="5"></div>
+</div>
+<div class="actions"><button class="primary" id="saveInitial">হিসাব সংরক্ষণ</button></div>
+</div>
+
+<h2>আজকের অগ্রগতি</h2>
+<div class="card">
+<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong id="goalText">আজকের লক্ষ্য: ৫ ওয়াক্ত</strong><span class="small" id="goalPercent">০%</span></div>
+<div class="progressbar"><span id="goalBar"></span></div>
+<div class="small" id="goalSub">লক্ষ্য পূরণ করতে আরও ৫ ওয়াক্ত</div>
+<div class="actions">
+<button class="secondary" id="exportBtn">হিসাব ডাউনলোড</button>
+<button class="secondary" id="resetToday">আজকের হিসাব রিসেট</button>
+<button class="secondary" id="resetAll">সব হিসাব মুছুন</button>
+</div>
+</div>
+<div class="notice"><strong>মনে রাখবেন:</strong> এই অ্যাপটি শুধু ব্যক্তিগত হিসাব রাখার সহায়ক; এটি ধর্মীয় ফতোয়া নয়। কাযা সালাতের সময়, ক্রম ও আপনার পরিস্থিতি অনুযায়ী করণীয় জানতে বিশ্বস্ত আলেমের পরামর্শ নিন। ডেটা এই ডিভাইসের ব্রাউজারে রাখা হয়—ব্রাউজারের ডেটা মুছে গেলে হিসাব হারাতে পারে।</div>
+</main>
+<footer>কাযা সালাত ট্র্যাকার · আপনার ইবাদতের হিসাব, আপনার ডিভাইসেই</footer>
+<script>
+const names = [
+ {id:'fajr',name:'ফজর',detail:'২ রাকাত ফরজ'},
+ {id:'zuhr',name:'যোহর',detail:'৪ রাকাত ফরজ'},
+ {id:'asr',name:'আসর',detail:'৪ রাকাত ফরজ'},
+ {id:'maghrib',name:'মাগরিব',detail:'৩ রাকাত ফরজ'},
+ {id:'isha',name:'এশা',detail:'৪ রাকাত ফরজ'}
+];
+const KEY='qazaSalahTracker_v1';
+const bn=n=>Math.max(0,Math.floor(Number(n)||0)).toLocaleString('bn-BD');
+const dateKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let state;
+function fresh(){return {remaining:{fajr:0,zuhr:0,asr:0,maghrib:0,isha:0},initial:{fajr:0,zuhr:0,asr:0,maghrib:0,isha:0},done:{fajr:0,zuhr:0,asr:0,maghrib:0,isha:0},daily:{date:dateKey(),count:0},goal:5}}
+function load(){try{const raw=localStorage.getItem(KEY);state=raw?Object.assign(fresh(),JSON.parse(raw)):fresh();if(!state.daily||state.daily.date!==dateKey())state.daily={date:dateKey(),count:0};}catch(e){state=fresh()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function render(){
+ const total=names.reduce((s,p)=>s+(+state.remaining[p.id]||0),0);
+ const done=names.reduce((s,p)=>s+(+state.done[p.id]||0),0);
+ const initial=names.reduce((s,p)=>s+(+state.initial[p.id]||0),0);
+ document.getElementById('total').textContent=bn(total);
+ document.getElementById('done').textContent=bn(done);
+ document.getElementById('today').textContent=bn(state.daily.count);
+ document.getElementById('percent').textContent=bn(initial?Math.min(100,Math.round(done/initial*100)):0)+'%';
+ document.getElementById('prayers').innerHTML=names.map(p=>`<div class="card prayer"><div><h3>${p.name}</h3><p>${p.detail} · বাকি ${bn(state.remaining[p.id])} ওয়াক্ত</p></div><div class="controls"><button class="round" aria-label="${p.name} বাকি এক বাড়ান" data-add="${p.id}">+</button><span class="count">${bn(state.remaining[p.id])}</span><button class="round" aria-label="${p.name} এক ওয়াক্ত আদায়" data-done="${p.id}" ${state.remaining[p.id]<=0?'disabled style="opacity:.35"':''}>−</button></div></div>`).join('');
+ document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const id=b.dataset.add;state.remaining[id]++;state.initial[id]++;save()});
+ document.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;if(state.remaining[id]>0){state.remaining[id]--;state.done[id]++;state.daily.count++;save()}});
+ const goal=Math.max(1,+state.goal||5),pct=Math.min(100,Math.round(state.daily.count/goal*100));
+ document.getElementById('goalText').textContent='আজকের লক্ষ্য: '+bn(goal)+' ওয়াক্ত';
+ document.getElementById('goalPercent').textContent=bn(pct)+'%';
+ document.getElementById('goalBar').style.width=pct+'%';
+ document.getElementById('goalSub').textContent=state.daily.count>=goal?'আলহামদুলিল্লাহ, আজকের লক্ষ্য পূরণ হয়েছে।':'লক্ষ্য পূরণ করতে আরও '+bn(goal-state.daily.count)+' ওয়াক্ত';
+ document.getElementById('goal').value=state.goal;
+ names.forEach(p=>document.getElementById(p.id+'Start').value=state.remaining[p.id]);
+}
+document.getElementById('saveInitial').onclick=()=>{
+ names.forEach(p=>{const v=Math.max(0,Math.floor(+document.getElementById(p.id+'Start').value||0));state.remaining[p.id]=v;state.initial[p.id]=v;state.done[p.id]=0});
+ state.goal=Math.max(1,Math.floor(+document.getElementById('goal').value||5));save();
+ alert('কাযা সালাতের হিসাব সংরক্ষণ করা হয়েছে।');
+};
+document.getElementById('goal').addEventListener('change',()=>{state.goal=Math.max(1,Math.floor(+document.getElementById('goal').value||5));save()});
+document.getElementById('resetToday').onclick=()=>{if(confirm('আজকের আদায়ের হিসাব শূন্য করবেন? বাকি কাযার হিসাব বদলাবে না।')){state.daily={date:dateKey(),count:0};save()}};
+document.getElementById('resetAll').onclick=()=>{if(confirm('সব হিসাব মুছে ফেলবেন? এই কাজ ফিরিয়ে নেওয়া যাবে না।')){state=fresh();save()}};
+document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='qaza-salah-backup.json';a.click();URL.revokeObjectURL(url)};
+load();render();
+</script>
+</body>
+</html>
